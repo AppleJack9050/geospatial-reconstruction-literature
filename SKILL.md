@@ -6,7 +6,13 @@ description: This skill automatically generates a structured LaTeX (`.tex`) lite
 # Geospatial Reconstruction Literature
 
 ## Content
-This part you could refer [Parallelized 3D Geospatial Reconstruction Pipelines for GIS-Grade Outputs.pdf] and [deep-research-report.md] in the assets. The format or framework you could refer [yuanliang.tex] in the references.
+This part you could refer [literature_review.tex] in the references. The format or framework you could refer [yuanliang.tex] in the references.
+
+## requirements
+- Relevance over volume; focus on topics that are directly connected to your research. Prioritise depth over breadth.
+- Clearly show what has already been done, highlight gaps, and explain how these gaps informed your research direction.
+- Firstly do systematic review, then do review on research question.
+
 
 ---
 

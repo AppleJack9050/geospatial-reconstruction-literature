@@ -1,0 +1,113 @@
+\chapter{Literature Review}\label{chap:survey}
+
+This chapter follows the required two-stage logic for this thesis topic. It first conducts a systematic mapping review of the local geospatial reconstruction corpus, then synthesizes that evidence to answer RQ1: how to maximize parallel processing in 3D reconstruction pipelines while preserving GIS-grade outputs.
+
+\section{Systematic Review Method}
+
+\subsection{Scope and research focus}
+
+The review scope is limited to parallelized 3D geospatial reconstruction workflows that can produce downstream mapping products such as georeferenced point clouds and digital elevation models (DEMs). The guiding question is RQ1: which decomposition and orchestration choices reduce end-to-end runtime without breaking geospatial utility.
+
+\subsection{Source set, inclusion, and exclusion}
+
+The source base is restricted to the 22 local PDF papers under `assets/`. No external standards documents or non-local sources are included. Inclusion criteria were: (1) explicit connection to structure-from-motion (SfM), multi-view stereo (MVS), bundle adjustment (BA), geospatial stereo, or distributed optimization for reconstruction; and (2) direct relevance to runtime, memory, scalability, or GIS-oriented output reliability. Exclusion criteria were: (1) papers outside the local corpus; (2) methods with no observable relevance to geospatial reconstruction pipelines.
+
+\subsection{Systematic mapping protocol}
+
+Each paper was assigned a registry ID (P01--P22) and mapped to: category, role (deep/supporting), pipeline stage, parallelization unit, reported acceleration signal, GIS-output relevance, and claim-confidence level. Deep papers were used for detailed synthesis; supporting papers were used for coverage and triangulation only. Claim extraction for deep synthesis used the local chapter notes and archived review notes available in the repository history.
+
+\section{Systematic Mapping Results}
+
+Table~\ref{tab:systematic-map} provides the full registry and taxonomy used in this review. Deep papers (P01--P15) are the evidence core for RQ1 synthesis, while supporting papers (P16--P22) provide breadth on distributed and next-generation large-scene methods.
+
+\begin{table}[ht]
+\centering
+\caption{Systematic mapping taxonomy for local geospatial reconstruction corpus (P01--P22).}
+\scriptsize
+\begin{tabular}{p{0.06\textwidth}p{0.11\textwidth}p{0.14\textwidth}p{0.17\textwidth}p{0.14\textwidth}p{0.15\textwidth}p{0.15\textwidth}}
+\hline
+\textbf{ID} & \textbf{Role/Conf.} & \textbf{Pipeline stage} & \textbf{Compute strategy} & \textbf{Scale/domain} & \textbf{Speed/memory signal} & \textbf{GIS-output relevance} \\
+\hline
+P01 & Deep/High & SfM baseline & Incremental sparse reconstruction baseline & Unstructured imagery & Baseline for runtime and robustness comparison & Camera poses and sparse structure for map pipelines \\
+P02 & Deep/High & MVS baseline & Pixelwise view selection and photometric consistency & Unstructured multi-view scenes & Dense stage robustness and efficiency baseline & Dense geometry quality before DEM generation \\
+P03 & Deep/High & Dense MVS & Massively parallel normal diffusion (GPU-oriented) & Multi-view dense reconstruction & Demonstrates natural dense-stage parallelism & Better dense completeness for surface products \\
+P04 & Deep/High & Geospatial stereo & Modular pushbroom stereo decomposition & Satellite pushbroom imagery & Tile/modular decomposition to scale processing & Direct DEM-oriented geospatial stereo workflow \\
+P05 & Deep/High & Global SfM & GPU-first first-order optimization, pair-linear scaling & Large image collections & Order-level speedups versus legacy SfM baselines & Faster camera graph recovery for mapping throughput \\
+P06 & Deep/High & End-to-end SfM & Fully sparse GPU parallel SfM and BA & Multi-dataset SfM benchmarks & Large reported speedup with competitive accuracy & Accelerated sparse core for geospatial pipelines \\
+P07 & Deep/High & SfM system & CUDA-accelerated offline SfM pipeline & Large-scale mapping scenarios & Throughput gain while keeping accuracy focus & Supports globally consistent mapping outputs \\
+P08 & Deep/High & Bundle adjustment & Matrix-free shared-intrinsics BA & Shared-camera settings & Lower memory footprint and faster BA iterations & Enables larger reconstructions on fixed hardware \\
+P09 & Deep/High & Graph optimization & Mixed-precision GPU nonlinear optimization & BA-like graph problems & Strong speedup under mixed precision & Reusable optimizer for geospatial BA workloads \\
+P10 & Deep/High & Satellite stereo & GPU-accelerated SGM with refined rectification & Large same-date satellite stereo & Removes dense matching bottleneck & Faster DEM production from satellite imagery \\
+P11 & Deep/High & End-to-end DEM & Modular photogrammetric DEM pipeline (ASP-based) & Multi-temporal glacier monitoring & Practical runtime and quality trade-off analysis & Explicit DEM and error-map generation workflow \\
+P12 & Deep/High & Diachronic stereo & Matching strategy for temporally separated imagery & Multi-date satellite pairs & Robustness-focused under temporal drift & Critical for change-aware GIS reconstruction \\
+P13 & Deep/High & Large UAV SfM & Hierarchical global SfM with parallel sub-models & Large UAV image blocks & Reduced runtime with geometric consistency checks & Scalable UAV mapping and sub-model merge quality \\
+P14 & Deep/High & Distributed BA & Block-compressed sparse matrix distribution for RCS & Super-large image sets & Enables BA beyond single-node memory limits & Makes city/region-scale adjustment feasible \\
+P15 & Deep/High & Point-cloud BA & MM-based decoupling and distributed optimization & Large point-cloud registration tasks & Strong complexity and memory reduction signals & Supports large geospatial point-cloud consistency \\
+P16 & Supp./Med. & Distributed BA & Decentralized surrogate-objective BA & Large BA across devices & Communication-aware acceleration strategy & Relevant for cluster-native mapping backends \\
+P17 & Supp./Med. & BA infrastructure & GPU-distributed BA library design & Multi-GPU/node optimization & Systems-level distributed solver acceleration & Infrastructure path for operational scale \\
+P18 & Supp./Med. & Collaborative SfM & Registration of partial reconstructions & Distributed partial models & Scales via sub-model collaboration & Practical for partitioned regional reconstruction \\
+P19 & Supp./Med. & Surface reconstruction & Partitioned large-scene Gaussian splatting & Urban large-scale aerial scenes & Time-efficient partitioning for large scenes & Surface outputs for urban digital twin contexts \\
+P20 & Supp./Med. & UAV scene pipeline & Large outdoor Gaussian splatting pipeline & UAV photorealistic large scenes & End-to-end runtime emphasis & Relevant to fast visual 3D scene products \\
+P21 & Supp./Med. & Preprocessing/scaling & Sub-image recapture for memory-scaled reconstruction & Very high-resolution imagery & Reduces memory pressure without downsampling & Keeps high-resolution geospatial detail \\
+P22 & Supp./Med. & Feed-forward geometry & Visual geometry transformer architecture & Large-scale multi-view geometry & Throughput-oriented architecture direction & Future candidate for rapid geometry backbones \\
+\hline
+\end{tabular}
+\label{tab:systematic-map}
+\end{table}
+
+The mapping shows three dominant acceleration loci: (1) SfM/BA core optimization (P05--P09, P13--P18), (2) dense stereo and DEM generation (P03--P04, P10--P12), and (3) partitioned large-scene reconstruction strategies (P19--P22). It also shows a methodological split: vision-centric papers tend to report stronger raw speedups, while geospatial workflow papers report stronger downstream product fidelity. This split directly motivates the RQ1 synthesis.
+
+\section{Review on RQ1}
+
+RQ1 asks how workflow decomposition and orchestration can maximize parallel execution while retaining GIS-grade outputs. The synthesis below uses the deep evidence set and connects each stage-level finding to system-level implications.
+
+\subsection{GPU-first SfM and BA as the primary acceleration core}
+
+Foundational SfM and dense baselines remain essential because they define the quality floor that accelerated systems must preserve~\cite{Schonberger2016,Schonberger2016MVS,Galliani2015}. Recent GPU-first systems then shift the scaling behavior of SfM itself: FastMap reformulates optimization around pair-linear first-order structure~\cite{Li2025FastMap}, InstantSfM exposes sparse GPU parallelism across global positioning and BA~\cite{Zhong2025InstantSfM}, and CuSfM demonstrates CUDA-first offline mapping-oriented design~\cite{Yu2025CuSfM}. On the BA side, matrix-free shared-intrinsics optimization reduces memory pressure~\cite{Safari2025}, while mixed-precision graph optimization broadens reusable high-throughput solver design~\cite{Gopinath2025}.
+
+Together, these studies show that major runtime reductions come from changing optimization structure, not only from moving old kernels to GPUs. Gap: most results are still presented as stage-centric acceleration claims, which informs the research direction toward explicit cross-stage orchestration and handoff-aware pipeline design.
+
+\subsection{Geospatial stereo and DEM stages remain decisive for GIS-grade outputs}
+
+In geospatial practice, dense stereo and DEM production often dominate end-to-end wall-clock time. The modular pushbroom stereo design established a decomposition pattern that remains central for satellite workflows~\cite{deFranchis2014}. Newer GPU-enabled pipelines reinforce this pattern: s2p-hd targets dense matching throughput for same-date satellite stereo~\cite{Amadei2025}, and Planet4Stereo demonstrates practical DEM generation with explicit error analysis in a geospatial monitoring context~\cite{Elias2025}. At the same time, diachronic stereo work shows that multi-date imagery introduces robustness costs that simple same-date acceleration assumptions do not solve~\cite{Masquil2026}.
+
+The combined signal is that a fast sparse front-end is insufficient when dense stages are not equally optimized and temporally robust. Gap: many acceleration papers still under-report temporal robustness and downstream DEM reliability, which informs the research direction toward change-aware dense reconstruction that is optimized jointly for speed and map-product validity.
+
+\subsection{Distributed optimization is required once datasets exceed single-node limits}
+
+When scene scale grows, global consistency and memory footprint become the limiting factors even with strong single-GPU kernels. Distributed BA with block-compressed reduced camera systems demonstrates one path for super-large image collections~\cite{Zheng2023}. Distributed point-cloud BA via majorization-minimization shows a complementary decoupling strategy for large registration problems~\cite{Li2025BALM}. Hierarchical global SfM for large UAV blocks further shows that parallel sub-model reconstruction and robust merge constraints must be treated as one system problem~\cite{Zhou2026}.
+
+Supporting local papers on decentralized BA, distributed BA infrastructure, and collaborative SfM (P16--P18) reinforce the same system message: scalability requires both algorithmic decoupling and communication-aware implementation. Gap: distributed sparse optimization and geospatial dense product generation are still weakly integrated in single validated pipelines, which informs the research direction toward unified distributed orchestration from camera graph to DEM output.
+
+\subsection{Cross-stage orchestration is the unresolved RQ1 bottleneck}
+
+Across the deep set, the most consistent pattern is decomposition by computational unit: image pairs, tiles, sparse blocks, or sub-models~\cite{Li2025FastMap,deFranchis2014,Zhou2026,Zheng2023}. This decomposition enables high local parallelism but introduces inter-stage coordination costs, including data movement, memory contention, and merge instability. Additional supporting work on partitioned large-scene reconstruction and feed-forward geometry backbones (P19--P22) indicates that new architectures may reduce orchestration overhead, but geospatial-output validation remains incomplete.
+
+Gap: the field lacks a single evaluation protocol that jointly reports runtime, memory, and GIS-oriented output reliability under heterogeneous conditions; this informs the research direction toward an end-to-end orchestration framework with explicit quality gates at stage boundaries.
+
+\section{Research Gaps and How They Shape Research Direction}
+
+Table~\ref{tab:evidence-gap} consolidates the main unresolved issues revealed by the systematic mapping and RQ1 synthesis.
+
+\begin{table}[ht]
+\centering
+\caption{Evidence-to-gap synthesis and implications for research direction.}
+\small
+\begin{tabular}{p{0.2\textwidth}p{0.23\textwidth}p{0.24\textwidth}p{0.25\textwidth}}
+\hline
+\textbf{Gap} & \textbf{Strongest evidence} & \textbf{Unresolved limitation} & \textbf{Implication for research direction} \\
+\hline
+Stage-local acceleration without full pipeline closure & GPU-first SfM and BA papers report strong local speedups~\cite{Li2025FastMap,Zhong2025InstantSfM,Safari2025,Gopinath2025} & Cross-stage handoff costs and orchestration overhead are rarely quantified end-to-end & Build a workflow that explicitly optimizes transitions between sparse, dense, and output stages \\
+Limited GIS-product-centered evaluation in high-speed systems & Geospatial DEM papers emphasize map product quality~\cite{deFranchis2014,Elias2025} while many vision accelerators emphasize pose/runtime & Runtime and geospatial product validity are not consistently co-reported in one framework & Add joint evaluation checkpoints linking acceleration decisions to DEM/point-cloud usefulness \\
+Temporal heterogeneity remains weakly addressed & Multi-date satellite matching requires dedicated methods~\cite{Masquil2026} and differs from same-date assumptions~\cite{Amadei2025} & Fast same-date pipelines can degrade under seasonal or cross-date variation & Prioritize change-aware dense matching and robustness-aware scheduling for heterogeneous acquisitions \\
+Distributed consistency is not yet end-to-end integrated & Distributed BA approaches scale global optimization~\cite{Zheng2023,Li2025BALM} and hierarchical SfM scales reconstruction blocks~\cite{Zhou2026} & Integration with dense geospatial product generation is incomplete & Design unified distributed orchestration that preserves global consistency through to map-ready outputs \\
+\hline
+\end{tabular}
+\label{tab:evidence-gap}
+\end{table}
+
+The gap analysis implies a concrete research direction: combine GPU-first local acceleration with distributed global consistency, then enforce geospatial-quality checks at each stage boundary. This direction follows directly from the evidence split observed in the mapping table and addresses the core RQ1 requirement of speed with GIS utility rather than speed alone.
+
+\section{Summary}
+
+This chapter first executed a systematic mapping review of the 22-paper local corpus and then used the deep evidence set to answer RQ1. The core conclusion is that parallelization gains are most reliable when computation is decomposed into explicit units (pairs, tiles, sparse blocks, sub-models) and orchestrated across stages instead of optimized in isolation. The literature also shows a persistent gap between fast reconstruction claims and GIS-grade downstream validation. Therefore, the next research step is an end-to-end, parallelized geospatial reconstruction pipeline that jointly optimizes runtime, memory behavior, and map-product reliability under heterogeneous acquisition conditions.
